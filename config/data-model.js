@@ -3,12 +3,24 @@ const db = require('../data/dbConfig.js');
 module.exports = {
   add,
   getUsers,
+  getTense,
+  getVerb,
   findBy,
   findById
 };
 
 function getUsers() {
   return db('users');
+}
+
+function getTense() {
+  return db('tense');
+}
+
+function getVerb(id) {
+  return db('verbs')
+  .where( 'rowid', id )
+  .first();
 }
 
 function findBy(filter) {

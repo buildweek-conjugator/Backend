@@ -7,14 +7,39 @@ const { authenticate } = require('../auth/authenticate');
 
 module.exports = server => {
   server.get('/api/admin/users', user_list);
+  server.get('/api/admin/tenses', get_tense);
+  server.get('/api/verbs/:id', get_verb);
   server.post('/api/register', register);
   server.post('/api/login', login);
 };
 
+function get_tense(req, res) {
+
+  Users.getTense()
+    .then(saved => {
+      res.status(200).json(saved);
+    })
+    .catch(error => {
+      console.log(error)
+      res.status(500).json(error);
+    });
+}
+
+function get_verb(req, res) {
+  const { id } = req.params; 
+  Users.getVerb(id)
+    .then(verb => {
+      res.status(200).json(verb);
+    })
+    .catch(error => {
+      console.log(error)
+      res.status(500).json(error);
+    });
+}
 function user_list(req, res) {
   Users.getUsers()
     .then(saved => {
-      res.status(201).json(saved);
+      res.status(200).json(saved);
     })
     .catch(error => {
       console.log(error)
