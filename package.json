@@ -18,6 +18,7 @@
     "sqlite3": "^4.0.9"
   },
   "scripts": {
+    "start": "node index.js",
     "server": "nodemon index.js"
   },
   "devDependencies": {
