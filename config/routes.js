@@ -6,15 +6,27 @@ const secrets = require('./secrets.js');
 const { authenticate } = require('../auth/authenticate');
 
 module.exports = server => {
+  server.get('/api/admin/users', user_list);
   server.post('/api/register', register);
   server.post('/api/login', login);
 };
+
+function user_list(req, res) {
+  Users.getUsers()
+    .then(saved => {
+      res.status(201).json(saved);
+    })
+    .catch(error => {
+      console.log(error)
+      res.status(500).json(error);
+    });
+}
+
 
 function register(req, res) {
   let user = req.body;
   const hash = bcrypt.hashSync(user.password, 10);
   user.password = hash;
-
   Users.add(user)
     .then(saved => {
       res.status(201).json(saved);
@@ -26,15 +38,14 @@ function register(req, res) {
 }
 
 function login(req, res) {
-  let { username, password } = req.body;
-  Users.findBy({ username })
+  let { email, password } = req.body;
+  Users.findBy({ email })
     .first()
     .then(user => {
       if (user && bcrypt.compareSync(password, user.password)) {
-        // produce a token
         const token = generateToken(user);
         res.status(200).json({
-          message: `Welcome ${user.username}!`,
+          message: `Welcome ${user.first_name}!`,
           token,
         });
       } else {
