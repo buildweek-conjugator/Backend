@@ -18,8 +18,8 @@ function getTense() {
 }
 
 function getVerb(id) {
-  return db('verbs')
-  .where( 'rowid', id )
+  return db('verb_list')
+  .where( 'verb_id', id )
   .first();
 }
 

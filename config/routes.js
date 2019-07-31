@@ -2,13 +2,14 @@ const bcrypt = require('bcryptjs');
 const Users = require('./data-model');
 const jwt = require('jsonwebtoken');
 const secrets = require('./secrets.js');
+const { fetch_verb } = require('./middleware.js');
 
 const { authenticate } = require('../auth/authenticate');
 
 module.exports = server => {
   server.get('/api/admin/users', user_list);
   server.get('/api/admin/tenses', get_tense);
-  server.get('/api/verbs/:id', get_verb);
+  server.get('/api/verbs/:id', fetch_verb, get_verb);
   server.post('/api/register', register);
   server.post('/api/login', login);
 };
