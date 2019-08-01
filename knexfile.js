@@ -12,7 +12,7 @@ module.exports = {
     seeds: {
       directory: './data/seeds'
     },
-    debug: true,
+    debug: false,
     // add the following
     pool: {
       afterCreate: (conn, done) => {

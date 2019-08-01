@@ -1,14 +1,13 @@
 const data = require('./data-model');
 
-module.exports = {fetch_verb};
+module.exports = { fetch_verb };
 
-function fetch_verb(req, res, next) {
-  const id = req.params; 
-
+function fetch_verb(id) {
+  console.log(id)
   data.getVerb(id)
     .then(verb => {
       console.log(verb);
-      next();
+      return(verb);
     })
     .catch(error => {
       console.log(error)
