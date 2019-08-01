@@ -207,7 +207,8 @@ async function fetch_pronoun(req, res, next) {
     const verb_form = req.verb_form
     data.getPronoun(verb_form)
     .then(pronoun => {
-      res.word.pronoun = pronoun[0].english
+      res.word.pronoun_spanish = pronoun[0].spanish
+      res.word.pronoun_english = pronoun[0].english
       next();
       })
       .catch(error => {

@@ -32,7 +32,7 @@ function getVerb(id, verb_form) {
 
 function getPronoun(verb_form) {
   return db('pronouns as p')
-    .select('p.english')
+    .select('p.english', 'p.spanish')
     .where({'p.form_ref': verb_form,})
 }
 
@@ -40,7 +40,7 @@ function getObjVerb(verb, verb_form)  {
   let vform = 'v.' + verb_form
   return db('verbs')
     .from('verbs as v')
-    .select({answer: vform}, 'v.infinitive', 'v.mood', 'v.tense', 'v.verb_english', 'v.short_english_verb' )
+    .select({answer: vform}, 'v.infinitive', 'v.mood_english', 'v.tense_english', 'v.verb_english', 'v.short_english_verb' )
     .where({ 'v.infinitive': verb, 'v.mood_english': 'Indicative'})
     .first() 
 }
