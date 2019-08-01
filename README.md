@@ -179,7 +179,7 @@ Token is provided with the request:
 
   **URL** : `/api/user/settings`
 
-  **Method** : `PUT`
+  **Method** : `GET`
 
   **Auth required** : YES
 
