@@ -185,7 +185,11 @@ function processUpdate (req, res, user){
   data.updateSettings(id, changes)
     .then(updatedSettings => {
       console.log('foo')
-      res.json({success: true,  records_updated: updatedSettings, message: 'Hurra! Bueno! ' + user.first_name + ', your settings have been updated.' });
+      res.status(200).json({
+        success: true,
+        records_updated: updatedSettings,
+        message: 'Hurra! Bueno! ' + user.first_name + ', your settings have been updated.'
+      });
     })
     .catch(err => {
       res.status(500).json({ err: err, message: 'Ay dios mio!' });

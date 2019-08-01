@@ -168,6 +168,160 @@ Token is provided with the request:
 * [Show user info](user/get.md) : `GET /api/user/`
 * [Update user info](user/put.md) : `PUT /api/user/`
 
+
+<details>
+  <summary>Get User Settings : <code>GET /api/user/settings</code></summary>
+    <p>
+
+  # Get Settings
+
+  Get the settings for the currently authenticated user. 
+
+  **URL** : `/api/user/settings`
+
+  **Method** : `PUT`
+
+  **Auth required** : YES
+
+  **Permissions required** : Authentication Token
+
+  **Data constraints**
+  Authentication token must be valid and match current user id.
+
+  ## Success Response
+
+  **Code** : `200 OK`
+
+  **Content examples**
+
+  ```json
+{
+  "id": 99,
+  "settings": {
+    "mood": {
+      "Indicative": true,
+      "Subjunctive": false,
+      "Imperative Affirmative": true,
+      "Imperative Negative": true
+    },
+    "tense": {
+      "Present": true,
+      "Future": true,
+      "Imperfect": true,
+      "Preterite": true,
+      "Conditional": true,
+      "Present Perfect": false,
+      "Future Perfect": true,
+      "Past Perfect": true,
+      "Preterite (Archaic)": true,
+      "Conditional Perfect": true
+    },
+    "vosotros": false
+  }
+}
+  ```
+
+  ## Error Responses
+
+  **Condition** : Server error, likely could not user in db.
+
+  **Code** : `500 INTERNAL SERVER ERROR`
+
+  **Content example**
+
+  ```json
+{
+  "err": {},
+  "message": "Ay dios mio!"
+}
+  ```
+
+  </p>
+</details>
+
+<details>
+  <summary>Update User Settings : <code>PUT /api/user/settings</code></summary>
+    <p>
+
+  # Update Settings
+
+  Update the settings for the currently authenticated user. 
+
+  **URL** : `/api/user/settings`
+
+  **Method** : `PUT`
+
+  **Auth required** : YES
+
+  **Permissions required** : Authentication Token
+
+  **Data constraints**
+  None
+
+  **Data example**
+
+  Must contain settings object with all required fields.
+
+  ```json
+{
+    "mood": {
+      "Indicative": false,
+      "Subjunctive": false,
+      "Imperative Affirmative": true,
+      "Imperative Negative": true
+    },
+    "tense": {
+      "Present": true,
+      "Future": true,
+      "Imperfect": true,
+      "Preterite": true,
+      "Conditional": true,
+      "Present Perfect": true,
+      "Future Perfect": true,
+      "Past Perfect": true,
+      "Preterite (Archaic)": true,
+      "Conditional Perfect": true
+    },
+    "vosotros": false
+}
+  ```
+
+  ## Success Response
+
+  **Code** : `200 OK`
+
+  **Content examples**
+
+  ```json
+{
+  "success": true,
+  "records_updated": 1,
+  "message": "Hurra! Bueno! Peter, your settings have been updated."
+}
+  ```
+
+  ## Error Responses
+
+  **Condition** : Server error, likely could not user in db.
+
+  **Code** : `500 INTERNAL SERVER ERROR`
+
+  **Content example**
+
+  ```json
+{
+  "err": {},
+  "message": "Ay dios mio!"
+}
+  ```
+
+  </p>
+</details>
+
+
+
+
+
 ### Admin related
 
 Endpoints for viewing and manipulating the Accounts that the Authenticated Admin User
