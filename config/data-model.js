@@ -1,15 +1,57 @@
 const db = require('../data/dbConfig.js');
+const ref = require('./constants.js');
 
 module.exports = {
   add,
+  createSettings,
   getUsers,
+  getSettings,
   getTense,
   getVerb,
   getPronoun,
   getObjVerb,
   findBy,
-  findById
+  findById,
+  adminUtil,
+  updateSettings
 };
+
+function adminUtil(){
+  return db('user_settings').update({settings: JSON.stringify(ref.defaultSettings)}).where({user_id: 1})
+  
+}
+
+async function add(user) {
+  const [id] = await db('users').insert(user)
+  return findById(id)
+}
+
+function findById(id) {
+return db('users')
+  .select('id', 'email', 'first_name', 'last_name')
+  .where( { id } ).orWhere(id)
+  .first()
+}
+
+function createSettings(newUser){
+  console.log(newUser)
+  return newUser, db('user_settings').insert({ 
+    user_id: newUser.id,
+    settings: JSON.stringify(ref.defaultSettings)
+  })
+
+}
+
+function getSettings(id) {
+  return db('user_settings').where( { user_id: id } )
+}
+
+function updateSettings(id, changes) {
+  console.log(changes)
+  return db('user_settings')
+    .where({ user_id: id })
+    .update({settings: JSON.stringify(changes)});
+}
 
 function getUsers() {
   return db('users');
@@ -49,14 +91,6 @@ function findBy(filter) {
   return db('users').where(filter);
 }
 
-function findById(id) {
-  return db('users')
-    .where({ id })
-    .first();
-}
 
-async function add(user) {
-  const [id] = await db('users').insert(user);
 
-  return findById(id);
-}
+

@@ -2,20 +2,41 @@ const bcrypt = require('bcryptjs');
 const data = require('./data-model');
 const jwt = require('jsonwebtoken');
 const secrets = require('./secrets.js');
+const ref = require('./constants.js');
 // const { fetch_verb } = require('./middleware.js');
 
-const { authenticate } = require('../auth/authenticate');
+const { authenticate } = require('../auth/auth-middleware');
 
 module.exports = server => {
+  server.post('/api/register', register, newSettings);
+  server.post('/api/login', login);
+  server.post('/api/user/settings', settings);
+
+  server.get('/api/user', authenticate, get_user);
+  server.get('/api/user/settings', authenticate, fetch_settings);
   server.get('/api/admin/users', user_list);
   server.get('/api/admin/tenses', get_tense);
+  server.get('/api/admin/util', admin_util);
   server.get('/api/verbs/:id', verb_constraints, fetch_verb, fetch_pronoun, get_verb);
-  server.post('/api/register', register);
-  server.post('/api/login', login);
+
+  server.put('/api/user/settings', authenticate, update_settings);
+
 };
 
-function get_tense(req, res) {
+function get_user(req, res){
+  let id = { id: req.decoded.subject }
+  data.findById(id)
+  .then(u => {
+    console.log(u)
+    res.status(200).json(u);
+  })
+  .catch(error => {
+    console.log(error)
+    res.status(500).json(error);
+  });
+}
 
+function get_tense(req, res) {
   data.getTense()
     .then(saved => {
       res.status(200).json(saved);
@@ -24,6 +45,25 @@ function get_tense(req, res) {
       console.log(error)
       res.status(500).json(error);
     });
+}
+function settings(req, res) {
+  const userSettings = ref.defaultSettings
+  res.status(200).json(userSettings);
+  // data.createSettings(userSettings)
+  //   .then(settings => {
+  //     res.status(200).json(settings);
+  //   })
+  //   .catch(error => {
+  //     console.log(error)
+  //     res.status(500).json(error);
+  //   });
+}
+
+function admin_util(req, res) {
+  data.adminUtil()
+  .then(r => {
+    res.status(200).json(r);
+  })
 }
 
 async function get_verb(req, res) {
@@ -47,18 +87,43 @@ function user_list(req, res) {
 }
 
 
-function register(req, res) {
+function register(req, res, next) {
   let user = req.body;
   const hash = bcrypt.hashSync(user.password, 10);
   user.password = hash;
   data.add(user)
-    .then(saved => {
-      res.status(201).json(saved);
+    .then(newUser => {
+      newUser.settings = ref.defaultSettings;
+      res.newUser = newUser;
+      next();
     })
     .catch(error => {
       console.log(error)
       res.status(500).json(error);
     });
+}
+
+function newSettings(req, res) {
+  console.log(res.newUser)
+  data.createSettings(res.newUser)
+  .then(regRes => {
+    res.status(201).json(res.newUser);
+  })
+}
+
+function fetch_settings(req, res) {
+  id = req.decoded.subject
+  console.log(id)
+  data.getSettings(id)
+  .then(s => {
+    const settings = {
+      id: id,
+      settings: JSON.parse(s[0].settings)
+    }
+    console.log(settings)
+
+    res.status(201).json(settings);
+  })
 }
 
 function login(req, res) {
@@ -81,6 +146,23 @@ function login(req, res) {
     });
 }
 
+function update_settings(req, res){
+  const changes = req.body;
+  let id = { id: req.decoded.subject }
+
+    data.findById(id)
+      .then(user => {
+        if (user){
+        req.user = user
+        processUpdate(req, res, user);
+        }
+    })
+    .catch(err => {
+      res.status(500).json({ error: err, message: 'No bueno hombre!' });
+    });
+
+}
+
 function generateToken(user) {
   const jwtPayload = {
     subject: user.id,
@@ -94,12 +176,24 @@ function generateToken(user) {
 }
 
 //middleware
+function processUpdate (req, res, user){
+  let id = req.user.id
+  let changes = req.body
+
+  console.log(id, changes)
+
+  data.updateSettings(id, changes)
+    .then(updatedSettings => {
+      console.log('foo')
+      res.json({success: true,  records_updated: updatedSettings, message: 'Hurra! Bueno! ' + user.first_name + ', your settings have been updated.' });
+    })
+    .catch(err => {
+      res.status(500).json({ err: err, message: 'Ay dios mio!' });
+    });
+
+}
+
 function randomProperty (obj) {
-
-  // const randoHandler = (obj) => {
-
-  // }
-
   function randoPicker(obj){
     let flag = false
 
@@ -124,20 +218,14 @@ function randomProperty (obj) {
     }
   }
 
-
-  // Use the key to get the corresponding name from the "names" object
   constraint = randoPicker(obj)
   if (constraint) {
     return constraint
   }
 
-  // var keys = Object.keys(obj)
-  // console.log(keys)
-  // return obj[keys[ keys.length * Math.random() << 0]];
 };
 
 async function verb_constraints(req, res, next) {
-
   const userSettings = {
   'mood': {
     'Indicative': true,
@@ -159,6 +247,7 @@ async function verb_constraints(req, res, next) {
   },
   "vosotros" : false
 }
+
 const verb_forms = [
   'form_1s', 
   'form_2s',
@@ -167,14 +256,12 @@ const verb_forms = [
   'form_2p',
   'form_3p'
 ]
+
   var selected_verb_form = verb_forms[Math.floor(Math.random()*verb_forms.length)];
   req.verb_form = selected_verb_form
   const constraint = () => {
     const result = randomProperty(userSettings.mood)
-
-  
     if (result){
-
       req.constraints = result
       next();
     } else {
@@ -182,8 +269,6 @@ const verb_forms = [
     }
   }
   constraint();
-
-
 }
 
 
