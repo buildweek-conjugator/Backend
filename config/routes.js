@@ -8,7 +8,7 @@ const ref = require('./constants.js');
 const { authenticate } = require('../auth/auth-middleware');
 
 module.exports = server => {
-  server.post('/api/register', register, newSettings);
+  server.post('/api/register', register);
   server.post('/api/login', login);
   server.post('/api/user/settings', settings);
 
@@ -55,7 +55,6 @@ function settings(req, res) {
 function admin_util(req, res) {
   // data.adminUtil()
   const id = 48
-  console.log(id, 1)
   data.findById(id)
   .then(r => {
     res.status(200).json(r);
@@ -82,7 +81,6 @@ function user_list(req, res) {
     });
 }
 
-
 function register(req, res, next) {
   let user = req.body;
   const hash = bcrypt.hashSync(user.password, 10);
@@ -90,10 +88,17 @@ function register(req, res, next) {
   data.add(user)
     .then(newUser => {
       console.log(newUser)
-      newUser.settings = ref.defaultSettings;
-      res.newUser = newUser;
-      next();
-    })
+      const i = newUser[0]
+      data.findById(i)
+      }).then(user => {
+        console.log(req)
+        res.status(200).json({ username: req.body.email, message: 'Account created' });
+      })
+      // console.log(newUser)
+      // newUser.settings = ref.defaultSettings;
+      // res.newUser = newUser;
+      // next();
+    
     .catch(error => {
       console.log(error)
       res.status(500).json(error);

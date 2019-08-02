@@ -22,11 +22,13 @@ function adminUtil(){
 }
 
 async function add(user) {
-  const [id] = await db('users').insert(user)
-  return findById(id)
+  const id = await db('users').insert(user)
+  return id
+  // return findById(id)
 }
 
 function findById(id) {
+
 return db('users')
   .select('id', 'email', 'first_name', 'last_name')
   .where( { id } ).orWhere({id: id}).orWhere(id)
