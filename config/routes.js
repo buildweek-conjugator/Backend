@@ -50,14 +50,6 @@ function get_tense(req, res) {
 function settings(req, res) {
   const userSettings = ref.defaultSettings
   res.status(200).json(userSettings);
-  // data.createSettings(userSettings)
-  //   .then(settings => {
-  //     res.status(200).json(settings);
-  //   })
-  //   .catch(error => {
-  //     console.log(error)
-  //     res.status(500).json(error);
-  //   });
 }
 
 function admin_util(req, res) {
