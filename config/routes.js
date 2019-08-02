@@ -134,6 +134,7 @@ function login(req, res) {
       if (user && bcrypt.compareSync(password, user.password)) {
         const token = generateToken(user);
         res.status(200).json({
+          username: user.email,
           message: `Welcome ${user.first_name}!`,
           token,
         });
