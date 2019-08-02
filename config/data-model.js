@@ -29,12 +29,11 @@ async function add(user) {
 function findById(id) {
 return db('users')
   .select('id', 'email', 'first_name', 'last_name')
-  .where( { id } ).orWhere(id)
+  .where( { id } ).orWhere({id: id}).orWhere(id)
   .first()
 }
 
 function createSettings(newUser){
-  console.log(newUser)
   return newUser, db('user_settings').insert({ 
     user_id: newUser.id,
     settings: JSON.stringify(ref.defaultSettings)

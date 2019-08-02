@@ -25,6 +25,7 @@ module.exports = server => {
 
 function get_user(req, res){
   let id = { id: req.decoded.subject }
+  console.log(id)
   data.findById(id)
   .then(u => {
     console.log(u)
@@ -60,7 +61,10 @@ function settings(req, res) {
 }
 
 function admin_util(req, res) {
-  data.adminUtil()
+  // data.adminUtil()
+  const id = 48
+  console.log(id, 1)
+  data.findById(id)
   .then(r => {
     res.status(200).json(r);
   })
@@ -93,6 +97,7 @@ function register(req, res, next) {
   user.password = hash;
   data.add(user)
     .then(newUser => {
+      console.log(newUser)
       newUser.settings = ref.defaultSettings;
       res.newUser = newUser;
       next();
